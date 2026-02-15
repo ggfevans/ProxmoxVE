@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-source <(curl -fsSL https://raw.githubusercontent.com/ggfevans/ProxmoxVE/feature/rackula/misc/build.func)
+source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
 # Copyright (c) 2021-2026 community-scripts ORG
 # Author: gVNS
-# License: MIT | https://github.com/ggfevans/ProxmoxVE/raw/main/LICENSE
+# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://github.com/RackulaLives/Rackula
 
 APP="Rackula"
@@ -68,6 +68,11 @@ function update_script() {
     msg_ok "Updated ${APP} to ${RELEASE}"
 
     msg_info "Starting Services"
+    nginx -t || {
+      msg_error "Nginx config test failed — restoring backup"
+      cp -a /opt/rackula/data.bak /opt/rackula/data
+      exit 1
+    }
     systemctl start rackula-api
     systemctl start nginx
     msg_ok "Started Services"
