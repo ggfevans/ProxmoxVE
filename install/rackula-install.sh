@@ -29,6 +29,12 @@ msg_info "Setting up Rackula"
 mkdir -p /opt/rackula/data /etc/nginx/snippets
 SECURITY_HEADERS_SRC="/opt/rackula/config/security-headers.conf"
 cp "$SECURITY_HEADERS_SRC" /etc/nginx/snippets/security-headers.conf
+
+# Runtime storage mode config consumed by index.html. The LXC always
+# provisions the API alongside the frontend, so server mode is fixed.
+# CROSS-REF: keep in sync with ct/rackula.sh update_script.
+printf 'window.__RACKULA_CONFIG__ = { storage: "server" };\n' >/opt/rackula/frontend/config.js
+
 chown -R root:root /opt/rackula/frontend
 find /opt/rackula/frontend -type d -exec chmod 755 {} \;
 find /opt/rackula/frontend -type f -exec chmod 644 {} \;
